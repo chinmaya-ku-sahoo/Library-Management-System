@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 from connect_db import Base
 
@@ -25,10 +25,10 @@ class BorrowingHistory(Base):
     borrow_id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.user_id'))
     book_id = Column(Integer, ForeignKey('books.book_id'))
-    borrow_date = Column(DateTime)
+    borrow_date = Column(DateTime, default=func.now())
     return_date = Column(DateTime)
-    reissued = Column(Boolean)
-    returned = Column(Boolean)
+    reissued = Column(Boolean, default=False)
+    returned = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="borrow_history")
     book = relationship("Book", back_populates="borrow_history")
