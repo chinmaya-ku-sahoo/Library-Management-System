@@ -8,12 +8,15 @@ router = APIRouter(
     prefix="/v1"
 )
 
-@router.post("/create-table")
+@router.post("/create-table",
+            tags=["Database"],
+            status_code=201,
+            description="Test Connection and Create Tables")
 async def create_table():
     try:
         models.Base.metadata.create_all(bind=engine)
         return {
-            "statuCode": 200,
+            "statuCode": 201,
             "message": "Successfully created the tables."
         }
     except Exception as e:
