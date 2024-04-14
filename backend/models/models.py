@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, func
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, func, LargeBinary
 from sqlalchemy.orm import relationship
 from connect_db import Base
 
@@ -17,6 +17,7 @@ class User(Base):
     username = Column(String)
     userrole = Column(String)
     password = Column(String)
+    salt = Column(LargeBinary)
 
     borrow_history = relationship("BorrowingHistory", back_populates="user")
 
