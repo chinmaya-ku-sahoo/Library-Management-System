@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, PositiveInt, field_validator
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 import datetime
 import re
@@ -84,12 +84,13 @@ class BorrowingHistoryBase(BaseModel):
 
 class BorrowingHistoryCreate(BorrowingHistoryBase):
     user_id: PositiveInt = Field(description="User ID of the borrower")
-    book_id: PositiveInt = Field(description="Book ID of the borrowed book")
 
 class BorrowingHistory(BorrowingHistoryBase):
     borrow_id: PositiveInt = Field(description="Unique identifier for the borrowing")
     user: User = Field(description="User who borrowed the book")
-    book: Book = Field(description="Book that was borrowed")
 
     class Config:
         from_attributes = True
+
+class BorrowingDetails(BaseModel):
+    book_ids: List[PositiveInt] = Field(description="List of books Id of borrowed book")

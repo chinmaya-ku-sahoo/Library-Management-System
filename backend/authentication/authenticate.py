@@ -33,7 +33,7 @@ async def authenticate_user(db: Session, auth_info: schema.LoginSchema, response
     if generated_psswrd != user_info.password:
         raise HTTPException(status_code=401, detail="Wrong username/password")
     
-    access_token = auth_handler.encode_token(str(User.user_id))
+    access_token = auth_handler.encode_token(str(user_info.user_id))
     response.set_cookie(key="access_token",value=access_token,httponly=True)
     return access_token
 

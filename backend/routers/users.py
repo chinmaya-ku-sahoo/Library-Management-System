@@ -20,9 +20,7 @@ auth_handler = Auth()
             tags=["Users"],
             description="Create a User",
             status_code=201)
-async def create_user(user: schema.UserCreate, db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
-    token = credentials.credentials
-    user_id = auth_handler.decode_token(token)
+async def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
     add_user(db, user)
     return {
