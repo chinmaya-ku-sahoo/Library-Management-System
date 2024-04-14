@@ -5,6 +5,11 @@ from typing import Optional
 import datetime
 import re
 
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+
+
 class Role(str, Enum):
     STUDENT = "student"
     LIBRARIAN = "librarian"
