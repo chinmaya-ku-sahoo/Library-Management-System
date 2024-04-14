@@ -1,21 +1,28 @@
-from fastapi import HTTPException, APIRouter, Depends
+from fastapi import HTTPException, APIRouter, Depends, Security, Response
 from sqlalchemy.orm import Session
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from connect_db import get_db
 from schemas import schema
-
 from models import models
+from authentication.auth import Auth
 
 
 router = APIRouter(
     prefix="/v1"
 )
 
+security = HTTPBearer()
+auth_handler = Auth()
+
 @router.post("/books",
             status_code=201,
             tags=["Books"],
             summary="Store a Book",
             response_description="Book Stored Successfully")
-async def store_books(book: schema.BookBase, db: Session = Depends(get_db)):
+async def store_books(book: schema.BookBase, db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    user_id = auth_handler.decode_token(token)
 
     book_title = db.query(models.Book).filter(models.Book.title == book.title).first()
     if book_title:
@@ -40,8 +47,10 @@ async def store_books(book: schema.BookBase, db: Session = Depends(get_db)):
             status_code=200,
             tags=["Books"],
             summary="Fetch all Books")
-async def get_all_books(db: Session = Depends(get_db)):
-
+async def get_all_books(db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    user_id = auth_handler.decode_token(token)
+    
     books = db.query(models.Book).all()
     if not books:
         raise HTTPException(status_code=404, detail="Books not found")
