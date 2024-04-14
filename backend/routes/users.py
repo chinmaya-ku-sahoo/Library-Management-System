@@ -1,45 +1,44 @@
-from fastapi import HTTPException, APIRouter, Depends
+from fastapi import HTTPException, APIRouter, Depends, Security
 from sqlalchemy.orm import Session
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from connect_db import get_db
 from schemas import schema
-
 from models import models
+from users.add_user import add_user
+from authentication.auth import Auth
 
 
 router = APIRouter(
     prefix="/v1"
 )
 
+security = HTTPBearer()
+auth_handler = Auth()
+
 @router.post("/users",
             tags=["Users"],
             description="Create a User",
             status_code=201)
-async def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
+async def create_user(user: schema.UserCreate, db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    user_id = auth_handler.decode_token(token)
 
-    db_user = db.query(models.User).filter(models.User.username == user.username).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
+    add_user(db, user)
+    return {
+        "statuCode": 201,
+        "message": "User created successfully",
+    }
 
-    try:
-        db_user = models.User(username=user.username, userrole=user.userrole, password = user.password)
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-
-        return {
-            "statuCode": 201,
-            "message": "User created successfully"
-        }
-    except Exception as e:
-        HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})
 
 
 @router.get("/users",
             tags=["Users"],
-            description="Get all Users",
+            description="Get All Users",
             status_code=200)
-async def get_all_user(db: Session = Depends(get_db)):
-
+async def get_all_user(db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    user_id = auth_handler.decode_token(token)
     users = db.query(models.User).all()
     if not users:
         raise HTTPException(status_code=404, detail="Users not found")
