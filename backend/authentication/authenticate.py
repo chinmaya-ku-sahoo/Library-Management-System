@@ -10,10 +10,6 @@ from schemas import schema
 from models.models import User
 from .auth import Auth
 
-import base64
-import json
-import logging
-
 
 auth_handler = Auth()
 
@@ -36,28 +32,4 @@ async def authenticate_user(db: Session, auth_info: schema.LoginSchema, response
     access_token = auth_handler.encode_token(str(user_info.user_id))
     response.set_cookie(key="access_token",value=access_token,httponly=True)
     return access_token
-
-    # timestamp = datetime.now(datetime.UTC)
-    
-    # maxAge = datetime.now() + timedelta(days=0, minutes=30)
-
-
-    # input_username = user_details.username
-    # username = input_username.lower()
-    
-
-    # # Generating psswrd with user input.
-
-            
-    # today = datetime.now()
-        
-    # # Checking the psswrd expiry date.
-    # expiry_date = db.query(Usermaster.psswrd_exp_date).filter(Usermaster.username == username).first()
-    
-    # if today >= expiry_date.psswrd_exp_date:
-    #     exceptions(419,"419-A",errormessages["errormessagecode"]["773"])      
-        
-    # access_token = auth_handler.encode_token(str(id_user))
-    # response.set_cookie(key="access_token",value=access_token,httponly=True)
-    # return access_token
             

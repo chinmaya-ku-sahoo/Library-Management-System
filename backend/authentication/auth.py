@@ -8,14 +8,12 @@ from datetime import datetime, timedelta
 import hashlib
 import secrets
 
-# Class to authorize user.
 class Auth():
+    '''
+    Class to authorize user.
+    '''
     hasher= CryptContext(schemes=['bcrypt'])
     secret = secrets.token_hex(32)
-    
-    # os.environ['value'] = secretval
-
-    # secret = os.getenv("value")
     
     def encode_psswrd(self, psswrd, salt):
         '''
@@ -45,6 +43,9 @@ class Auth():
         )
 
     def decode_token(self, token):
+        '''
+        Method to decode the token and return user id.
+        '''
         try:
             payload = jwt.decode(token, self.secret, algorithms=['HS256'])
             if (payload['scope'] == 'access_token'):
