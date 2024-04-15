@@ -19,9 +19,9 @@ security = HTTPBearer()
 auth_handler = Auth()
 
 @router.post("/borrow",
-            tags=["Borrow"],
+            tags=["Borrow Books"],
             status_code=201,
-            description="Borrow Book")
+            description="Borrow Books Based on Book Id")
 
 async def borrow_book(books: BorrowingDetails, db: Session = Depends(get_db),
                     credentials: HTTPAuthorizationCredentials = Security(security)):
@@ -77,46 +77,3 @@ async def borrow_book(books: BorrowingDetails, db: Session = Depends(get_db),
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=422, detail={"message": f"Unable to create tables due to {e}"})
-
-
-
-@router.get("/students/{user_id}/books",
-            tags=["Students"],
-            status_code=200,
-            description="Get student borrowing history")
-async def get_student_history(user_id: int, db: Session = Depends(get_db)):
-
-    user_role = db.query(models.User.userrole).filter(models.User.user_id == user_id).first()
-
-    if not user_role:
-        raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
-    
-    if user_role.userrole != "student":
-        raise HTTPException(status_code=422, detail=f"User with id {user_id} is not a student")
-    
-    
-    book_transactions = db.query(models.BorrowingHistory).filter(models.BorrowingHistory.user_id == user_id).all()
-    if not book_transactions:
-        raise HTTPException(status_code=422, detail=f"No borrowing history for thr user with id {user_id}")
-    
-    else:
-        try:
-        
-            result = []
-            for trans in book_transactions:
-                book_details = db.query(models.Book.title).filter(models.Book.book_id == trans.book_id).first()
-                result.append({
-                        "title": book_details.title,
-                        "borrow_date": trans.borrow_date,
-                        "return_date": trans.return_date
-                    }
-                )
-
-            return {
-                        "statuCode": 200,
-                        "message": "Record fetched successfully",
-                        "detail": result
-                    }
-
-        except Exception as e:
-            raise HTTPException(status_code=422, detail={"message": f"Unable to create tables due to {e}"})

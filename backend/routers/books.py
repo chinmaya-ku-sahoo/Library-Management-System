@@ -1,11 +1,15 @@
-from fastapi import HTTPException, APIRouter, Depends, Security, Response
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Security, Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from connect_db import get_db
 from schemas import schema
 from models import models
 from authentication.auth import Auth
+
+from crud_operations.books.add_books import add_books
+from crud_operations.books import get_books
 
 
 router = APIRouter(
@@ -20,58 +24,41 @@ auth_handler = Auth()
             tags=["Books"],
             summary="Store a Book",
             response_description="Book Stored Successfully")
-async def store_books(book: schema.BookBase, db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
-    token = credentials.credentials
-    user_id = auth_handler.decode_token(token)
 
-    book_title = db.query(models.Book).filter(models.Book.title == book.title).first()
-    if book_title:
-        raise HTTPException(status_code=400, detail="Book already exist")
-
-    try:
-        book_data = models.Book(title=book.title, total_copies=book.total_copies, available_copies = book.total_copies)
-        db.add(book_data)
-        db.commit()
-        db.refresh(book_data)
-
-        return {
-            "statuCode": 201,
-            "message": "Book stored sucessfully"
-        }
+async def store_books(book: schema.BookBase, db: Session = Depends(get_db),
+                       credentials: HTTPAuthorizationCredentials = Security(security)):
     
-    except Exception as e:
-        HTTPException(status_code=500, detail={"message": f"Unable to store book due to {e}"})
+    await add_books(db, book)
+    return {
+            "statusCode": 201,
+            "message": "Book stored successfully"
+        }
 
 
 @router.get("/books",
             status_code=200,
             tags=["Books"],
-            summary="Fetch all Books")
-async def get_all_books(db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Security(security)):
+            summary="Fetch Books Based on Role")
+
+async def get_all_books(db: Session = Depends(get_db), 
+                        credentials: HTTPAuthorizationCredentials = Security(security)):
+    
     token = credentials.credentials
     user_id = auth_handler.decode_token(token)
+
+    user_role = db.query(models.User.userrole).filter(models.User.user_id == user_id).first()
+
+    if user_role.userrole == "student":
+        details = await get_books.get_student_history(db, user_id)
     
-    books = db.query(models.Book).all()
-    if not books:
-        raise HTTPException(status_code=404, detail="Books not found")
+    elif user_role.userrole == "anonymous":
+        details = await get_books.get_anonymous_history(db)
 
-    try:
-        all_book = []
-        for book in books:
-            all_book.append(
-                {
-                "book_id": book.book_id,
-                "title": book.title,
-                "total_copies": book.total_copies,
-                "available_copies": book.available_copies
-            })
+    else:
+        details = await get_books.get_librarian_history(db)
 
-        return {
+    return {
             "statuCode": 200,
             "message": "Books fetched sucessfully",
-            "detail": all_book
+            "detail": details
         }
-
-
-    except Exception as e:
-        HTTPException(status_code=500, detail={"message": f"Unable fetch books due to {e}"})
