@@ -41,16 +41,3 @@ class BorrowingDetails(Base):
 
     borrow_history = relationship("BorrowingHistory", back_populates="borrow_details")
     book = relationship("Book", back_populates="borrow_details")
-
-
-# class Renewals(Base):
-#     __tablename__ = 'renewals'
-#     renewal_id = Column(Integer, primary_key=True)
-#     borrow_id = Column(Integer, ForeignKey('borrowing_history.borrow_id'))
-#     renewal_date = Column(DateTime)
-
-#     borrowing_history = relationship("BorrowingHistory", back_populates="renewal")
-
-#     __table_args__ = (
-#         {"unique_together": ('borrow_id', 'renewal_date')}
-#     )
