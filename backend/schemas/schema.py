@@ -93,4 +93,4 @@ class BorrowingHistory(BorrowingHistoryBase):
         from_attributes = True
 
 class BorrowingDetails(BaseModel):
-    book_ids: List[PositiveInt] = Field(description="List of books Id of borrowed book")
+    book_ids: List[PositiveInt] = Field(description="List of books Id of borrowed book", min_length=1, max_length=10)
