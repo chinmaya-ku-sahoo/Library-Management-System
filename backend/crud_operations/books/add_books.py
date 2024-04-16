@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from schemas import schema
 from models import models
@@ -18,7 +19,10 @@ async def add_books(db: Session, book: schema.BookBase):
         db.add(new_book)
         db.commit()
         db.refresh(new_book)
-
-    except Exception as e:
+    
+    except SQLAlchemyError as e:
         db.rollback()
+        raise HTTPException(status_code=500, detail=f"Unable to store the book due to {e}")
+    
+    except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unable to store the book due to {e}")

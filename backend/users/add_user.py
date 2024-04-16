@@ -29,6 +29,7 @@ def add_user(db: Session, user: schema.UserCreate):
     
     except SQLAlchemyError as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})
+        raise HTTPException(status_code=500, detail=f"Unable to create user due to {e}")
+    
     except Exception as e:
-        raise HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})
+        raise HTTPException(status_code=500, detail=f"Unable to create user due to {e}")
