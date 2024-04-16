@@ -14,7 +14,7 @@ def add_user(db: Session, user: schema.UserCreate):
     '''
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail={"message": "Username already registered"})
 
     try:
         salt = os.urandom(32)
@@ -29,7 +29,7 @@ def add_user(db: Session, user: schema.UserCreate):
     
     except SQLAlchemyError as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Unable to create user due to {e}")
+        raise HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unable to create user due to {e}")
+        raise HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})

@@ -11,7 +11,7 @@ async def add_books(db: Session, book: schema.BookBase):
     # Check if book with the same title already exists
     existing_book = db.query(models.Book).filter(models.Book.title == book.title).first()
     if existing_book:
-        raise HTTPException(status_code=400, detail="Book already exists")
+        raise HTTPException(status_code=400, detail={"message": "Book already exists"})
 
     try:
         # Create new book record
@@ -22,7 +22,7 @@ async def add_books(db: Session, book: schema.BookBase):
     
     except SQLAlchemyError as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Unable to store the book due to {e}")
+        raise HTTPException(status_code=500, detail={"message": f"Unable to store the book due to {e}"})
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unable to store the book due to {e}")
+        raise HTTPException(status_code=500, detail={"message": f"Unable to store the book due to {e}"})

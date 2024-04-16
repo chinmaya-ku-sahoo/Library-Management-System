@@ -7,7 +7,7 @@ async def get_users(db: Session):
     
     users = db.query(models.User).all()
     if not users:
-        raise HTTPException(status_code=404, detail="Users not found")
+        raise HTTPException(status_code=404, detail={"message": "Users not found"})
 
     try:
         result = []

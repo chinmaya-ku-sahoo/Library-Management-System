@@ -50,8 +50,8 @@ class Auth():
             payload = jwt.decode(token, self.secret, algorithms=['HS256'])
             if (payload['scope'] == 'access_token'):
                 return payload['sub']
-            raise HTTPException(status_code=401, detail="Invalid Token Scope")
+            raise HTTPException(status_code=401, detail={"message": "Invalid Token Scope"})
         except ExpiredSignatureError as e:
-            raise HTTPException(status_code=401, detail=f"Token Expired: {e}")
+            raise HTTPException(status_code=401, detail={"message": f"Token Expired: {e}"})
         except JWTError as e:
-            raise HTTPException(status_code=401, detail=f"Invalid Token: {e}")
+            raise HTTPException(status_code=401, detail={"message": f"Invalid Token: {e}"})
