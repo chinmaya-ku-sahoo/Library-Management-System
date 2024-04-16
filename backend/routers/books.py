@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, Security, Response
+from fastapi import APIRouter, Depends, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
 from connect_db import get_db
 from schemas import schema
@@ -38,7 +37,7 @@ async def store_books(book: schema.BookBase, db: Session = Depends(get_db),
 @router.get("/books",
             status_code=200,
             tags=["Books"],
-            summary="Fetch Books Based on Role")
+            summary="Get Books Based on Role")
 
 async def get_all_books(db: Session = Depends(get_db), 
                         credentials: HTTPAuthorizationCredentials = Security(security)):

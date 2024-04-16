@@ -1,10 +1,12 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
+from authentication.auth import Auth
 from schemas import schema
 from models import models
-from .hash_password import hash_password
+
+import os
 
 def add_user(db: Session, user: schema.UserCreate):
     '''
@@ -15,12 +17,18 @@ def add_user(db: Session, user: schema.UserCreate):
         raise HTTPException(status_code=400, detail="Username already registered")
 
     try:
-        hashed_psswrd, salt = hash_password(user.password)
+        salt = os.urandom(32)
+        
+        auth = Auth()
+        hashed_psswrd = auth.encode_psswrd(user.password, salt)
+
         user_info = models.User(username=user.username, userrole=user.userrole, password = hashed_psswrd, salt = salt)
         db.add(user_info)
         db.commit()
         db.refresh(user_info)
+    
     except SQLAlchemyError as e:
         db.rollback()
+        raise HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})
     except Exception as e:
         raise HTTPException(status_code=500, detail={"message": f"Unable to create user due to {e}"})
