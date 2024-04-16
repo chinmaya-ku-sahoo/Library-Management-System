@@ -6,7 +6,7 @@ from models.models import BorrowingDetails, BorrowingHistory, Book
 async def get_student_history(db: Session, user_id):
     
     try:
-        borrow_details = db.query(BorrowingHistory.return_date, BorrowingDetails.book_id, Book.title)\
+        borrow_details = db.query(BorrowingHistory.borrow_id, BorrowingHistory.return_date, BorrowingDetails.book_id, Book.title)\
         .join(BorrowingDetails, BorrowingHistory.borrow_id == BorrowingDetails.borrow_id)\
         .join(Book, BorrowingDetails.book_id == Book.book_id)\
         .filter(BorrowingHistory.user_id == user_id).all()
@@ -14,6 +14,7 @@ async def get_student_history(db: Session, user_id):
         result = []
         for detail in borrow_details:
             result.append({
+                "borrow_id": detail.borrow_id,
                 "book_id": detail.book_id,
                 "title": detail.title,
                 "return_date": detail.return_date

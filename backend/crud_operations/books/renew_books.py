@@ -12,15 +12,15 @@ async def renew_book_by_borrow_id(db: Session, user_id, borrow_id):
         raise HTTPException(status_code=404, detail=f"Borrowing id {borrow_id} not found for logged-in user")
 
     try:
-        borrow_data = db.query(models.BorrowingHistory).filter(models.BorrowingHistory.borrow_id == borrow_id).first()
-        setattr(borrow_data, "reissued", True)
         
-        old_return_date = borrow_data.return_date
+        old_return_date = user_borrow.return_date
         new_date = old_return_date+timedelta(days=30)
-        setattr(borrow_data, "return_date", new_date)
+
+        db.query(models.BorrowingHistory)\
+        .filter(models.BorrowingHistory.borrow_id == borrow_id, models.BorrowingHistory.user_id == user_id)\
+        .update({models.BorrowingHistory.return_date: new_date, models.BorrowingHistory.reissued: True})
             
         db.commit()
-        db.refresh(borrow_data)
 
     except SQLAlchemyError as e:
         db.rollback()
