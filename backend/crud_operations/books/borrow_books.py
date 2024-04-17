@@ -19,7 +19,16 @@ async def borrow_books(db: Session, books: schema.BorrowingDetails, user_id):
     book_id = books.book_ids
     if len(book_id) != len(set(book_id)):
         raise HTTPException(status_code=422, detail={"message": f"Provide unique book ids"})
+
+    book_count = db.query(models.BorrowingHistory)\
+    .join(models.BorrowingDetails, models.BorrowingHistory.borrow_id == models.BorrowingDetails.borrow_id)\
+    .filter(models.BorrowingHistory.user_id == user_id, models.BorrowingHistory.returned == False)\
+    .count()
     
+    book_count += len(book_id)
+    if book_count > 10:
+        raise HTTPException(status_code=422, detail={"message": f"Each student can't borrow more than 10 books"})
+
     db_book = db.query(models.Book.book_id).all()
     if not db_book:
         raise HTTPException(status_code=404, detail={"message": f"Book not found"})
