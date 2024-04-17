@@ -83,7 +83,7 @@ class BorrowingHistoryBase(BaseModel):
     returned: bool = Field(description="Whether the book was returned or not")
 
 class BorrowingHistoryCreate(BorrowingHistoryBase):
-    user_id: PositiveInt = Field(description="User ID of the borrower")
+    user_id: PositiveInt = Field(description="User Id of the borrower")
 
 class BorrowingHistory(BorrowingHistoryBase):
     borrow_id: PositiveInt = Field(description="Unique identifier for the borrowing")

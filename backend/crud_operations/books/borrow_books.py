@@ -11,10 +11,10 @@ async def borrow_books(db: Session, books: schema.BorrowingDetails, user_id):
     user_role = db.query(models.User.userrole).filter(models.User.user_id == user_id).first()
 
     if not user_role:
-        raise HTTPException(status_code=404, detail={"message": f"User with id {user_id} not found"})
+        raise HTTPException(status_code=404, detail={"message": f"User with Id {user_id} not found"})
     
     if user_role.userrole != "student":
-        raise HTTPException(status_code=422, detail={"message": f"User with id {user_id} is not a student"})
+        raise HTTPException(status_code=422, detail={"message": f"User with Id {user_id} is not a student"})
     
     book_id = books.book_ids
     if len(book_id) != len(set(book_id)):
@@ -26,7 +26,7 @@ async def borrow_books(db: Session, books: schema.BorrowingDetails, user_id):
     
     db_book_list = [id[0] for id in db_book]
     if not all(id in db_book_list for id in book_id):
-        raise HTTPException(status_code=404, detail={"message": f"Invalid book id provided"})    
+        raise HTTPException(status_code=404, detail={"message": f"Invalid book Id provided"})    
     
     try:
 
@@ -56,4 +56,4 @@ async def borrow_books(db: Session, books: schema.BorrowingDetails, user_id):
         raise HTTPException(status_code=500, detail={"message": f"Unable to borrow the books due to {e}"})
     
     except Exception as e:
-        raise HTTPException(status_code=422, detail={"message": f"Unable to borrow the books due to {e}"})
+        raise HTTPException(status_code=500, detail={"message": f"Unable to borrow the books due to {e}"})

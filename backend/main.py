@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 
-from routers import create_table, users, books, login, borrow, renew, return_book
+from routers import create_table, users, books, login, borrow, renew, return_book, borrow_history
 
 app = FastAPI(
     title="Library Management System",
@@ -17,3 +17,4 @@ app.include_router(books.router)
 app.include_router(borrow.router)
 app.include_router(renew.router)
 app.include_router(return_book.router)
+app.include_router(borrow_history.router)

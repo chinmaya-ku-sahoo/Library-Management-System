@@ -9,13 +9,13 @@ async def renew_book_by_borrow_id(db: Session, user_id, borrow_id):
     
     user_borrow = db.query(models.BorrowingHistory).filter(models.BorrowingHistory.user_id == user_id, models.BorrowingHistory.borrow_id == borrow_id).first()
     if not user_borrow:
-        raise HTTPException(status_code=404, detail={"message": f"Borrowing id {borrow_id} not found for logged-in user"})
+        raise HTTPException(status_code=404, detail={"message": f"Borrow Id {borrow_id} not found for logged-in user"})
 
     if user_borrow.reissued:
-        raise HTTPException(status_code=422, detail={"message": f"Books are already renewed for borrowing id {borrow_id}"})
+        raise HTTPException(status_code=422, detail={"message": f"Books are already renewed for borrow Id {borrow_id}"})
     
     if user_borrow.returned:
-        raise HTTPException(status_code=422, detail={"message": f"Books are already returned for borrowing id {borrow_id}"})
+        raise HTTPException(status_code=422, detail={"message": f"Books are already returned for borrow Id {borrow_id}"})
 
     try:
         
