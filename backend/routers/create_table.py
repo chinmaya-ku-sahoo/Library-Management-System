@@ -11,6 +11,7 @@ router = APIRouter(
 @router.post("/create-table",
             tags=["Database"],
             status_code=201,
+            summary="Create Table",
             description="Test Connection and Create Tables")
 async def create_table():
     try:

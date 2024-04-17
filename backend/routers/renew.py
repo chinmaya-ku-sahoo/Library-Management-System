@@ -14,9 +14,10 @@ router = APIRouter(
 security = HTTPBearer()
 auth_handler = Auth()
 
-@router.post("/renew/{borrow_id}",
+@router.put("/library/renew/{borrow_id}",
             tags=["Renew Books"],
-            status_code=201,
+            status_code=200,
+            summary="Renew Book by Borrow Id",
             description="Renew Books Using Borrow Id")
 
 async def renew_book(borrow_id: str, db: Session = Depends(get_db),
@@ -27,6 +28,6 @@ async def renew_book(borrow_id: str, db: Session = Depends(get_db),
 
     await renew_book_by_borrow_id(db, user_id, borrow_id)
     return {
-            "statuCode": 201,
+            "statuCode": 200,
             "message": "Book Renewed Successfully"
         }

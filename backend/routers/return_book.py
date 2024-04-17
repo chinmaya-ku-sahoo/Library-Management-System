@@ -14,10 +14,12 @@ router = APIRouter(
 security = HTTPBearer()
 auth_handler = Auth()
 
-@router.post("/return/{borrow_id}",
+@router.delete("/library/return/{borrow_id}",
             tags=["Return Books"],
-            status_code=201,
-            description="Return Books Using Borrow Id")
+            status_code=204,
+            description="Return a Books Using Borrow Id",
+            summary="Return Book by Borrow Id",
+            response_description="Book Returned Successfully.")
 
 async def return_book(borrow_id: str, db: Session = Depends(get_db),
                     credentials: HTTPAuthorizationCredentials = Security(security)):
@@ -26,7 +28,4 @@ async def return_book(borrow_id: str, db: Session = Depends(get_db),
     user_id = auth_handler.decode_token(token)
 
     await return_book_by_borrow_id(db, user_id, borrow_id)
-    return {
-            "statuCode": 201,
-            "message": "Book Returned Successfully"
-        }
+    return None

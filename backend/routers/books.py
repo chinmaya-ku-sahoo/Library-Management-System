@@ -20,8 +20,8 @@ auth_handler = Auth()
 @router.post("/books",
             status_code=201,
             tags=["Books"],
-            summary="Store a Book",
-            response_description="Book Stored Successfully")
+            summary="Register a Book",
+            response_description="Book Registered Successfully")
 
 async def store_books(book: schema.BookBase, db: Session = Depends(get_db),
                        credentials: HTTPAuthorizationCredentials = Security(security)):
@@ -29,7 +29,7 @@ async def store_books(book: schema.BookBase, db: Session = Depends(get_db),
     await add_books(db, book)
     return {
             "statusCode": 201,
-            "message": "Book stored successfully"
+            "message": "Book Registered Successfully"
         }
 
 
@@ -46,6 +46,6 @@ async def get_all_books(db: Session = Depends(get_db),
     details = await get_books(db)
     return {
             "statuCode": 200,
-            "message": "Books fetched sucessfully",
+            "message": "Books Fetched Sucessfully",
             "detail": details
         }

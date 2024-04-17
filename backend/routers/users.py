@@ -18,6 +18,7 @@ security = HTTPBearer()
 @router.post("/users",
             tags=["Users"],
             description="Create a User",
+            summary="Create a User",
             status_code=201)
 async def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
@@ -32,6 +33,7 @@ async def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 @router.get("/users",
             tags=["Users"],
             description="Get All Users",
+            summary="Get All Users",
             status_code=200)
 async def get_all_user(db: Session = Depends(get_db), 
                        credentials: HTTPAuthorizationCredentials = Security(security)):

@@ -7,7 +7,8 @@ app = FastAPI(
     title="Library Management System",
     docs_url="/docs",
     redoc_url="/redocs",
-    description="Library Management System for managing"
+    description="The 'Library Management System' includes functionality for \
+        managing books, users, borrowing history, and renewals in a library setting."
     )
 
 app.include_router(create_table.router)

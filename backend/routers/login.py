@@ -13,6 +13,7 @@ router = APIRouter(
 @router.post("/login",
             tags=["Authentication"],
             status_code=200,
+            summary="User Login",
             description="User Login")
 
 async def user_login(response: Response, login_info: schema.LoginSchema, db: Session = Depends(get_db)):

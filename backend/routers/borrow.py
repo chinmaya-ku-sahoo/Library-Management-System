@@ -15,9 +15,10 @@ router = APIRouter(
 security = HTTPBearer()
 auth_handler = Auth()
 
-@router.post("/borrow",
+@router.post("/library/borrow",
             tags=["Borrow Books"],
             status_code=201,
+            summary=["Borrow Books"],
             description="Borrow Books Based on Book Id")
 
 async def borrow_book(books: BorrowingDetails, db: Session = Depends(get_db),
